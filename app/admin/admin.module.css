@@ -1,0 +1,168 @@
+.main {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+.siteTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1e40af;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.period {
+  color: #f59e0b;
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  color: #1e40af;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #4a5568;
+}
+
+.input,
+.textarea,
+.select,
+.sectionInput,
+.faqInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus,
+.sectionInput:focus,
+.faqInput:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.sectionTitle {
+  font-size: 1.4rem;
+  color: #2d3748;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.sectionContainer,
+.faqContainer {
+  margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 1rem;
+  background-color: #f8fafc;
+}
+
+.sectionHeader,
+.faqHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.sectionInput,
+.faqInput {
+  flex-grow: 1;
+  margin-right: 1rem;
+}
+
+.addButton,
+.removeButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.addButton {
+  background-color: #4a5568;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.removeButton {
+  background-color: #e53e3e;
+  color: white;
+}
+
+.addButton:hover {
+  background-color: #2d3748;
+}
+
+.removeButton:hover {
+  background-color: #c53030;
+}
+
+.submitButton {
+  background-color: #1e40af;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 1.5rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.submitButton:hover {
+  background-color: #1e3a8a;
+}
+
+.submitButton:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.submitMessage {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.success {
+  background-color: #c6f6d5;
+  color: #2f855a;
+}
+
+.error {
+  background-color: #fed7d7;
+  color: #9b2c2c;
+}
