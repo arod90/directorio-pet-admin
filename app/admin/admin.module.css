@@ -43,9 +43,7 @@
 
 .input,
 .textarea,
-.select,
-.sectionInput,
-.faqInput {
+.select {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
@@ -56,9 +54,7 @@
 
 .input:focus,
 .textarea:focus,
-.select:focus,
-.sectionInput:focus,
-.faqInput:focus {
+.select:focus {
   outline: none;
   border-color: #4299e1;
   box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
@@ -97,6 +93,10 @@
 .faqInput {
   flex-grow: 1;
   margin-right: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 1rem;
 }
 
 .addButton,
@@ -165,4 +165,16 @@
 .error {
   background-color: #fed7d7;
   color: #9b2c2c;
+}
+
+.imagePreview {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.imagePreview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
 }

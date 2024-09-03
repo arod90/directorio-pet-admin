@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import styles from './admin.module.css';
 
 const categories = [
@@ -26,6 +27,7 @@ export default function AdminPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const [submitStatus, setSubmitStatus] = useState('');
+  const [images, setImages] = useState([{ url: '', alt: '' }]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,6 +50,7 @@ export default function AdminPage() {
           sections,
           faqs,
           conclusion,
+          images,
         }),
       });
 
@@ -64,6 +67,7 @@ export default function AdminPage() {
         setSections([{ title: '', content: '' }]);
         setFaqs([{ question: '', answer: '' }]);
         setConclusion('');
+        setImages([{ url: '', alt: '' }]);
       } else {
         throw new Error('Failed to create blog post');
       }
@@ -90,6 +94,14 @@ export default function AdminPage() {
 
   const removeFaq = (index) => {
     setFaqs(faqs.filter((_, i) => i !== index));
+  };
+
+  const addImage = () => {
+    setImages([...images, { url: '', alt: '' }]);
+  };
+
+  const removeImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
   };
 
   return (
@@ -258,6 +270,57 @@ export default function AdminPage() {
         ))}
         <button type="button" onClick={addFaq} className={styles.addButton}>
           Add FAQ
+        </button>
+
+        <h3 className={styles.sectionTitle}>Blog Images</h3>
+        {images.map((image, index) => (
+          <div key={index} className={styles.sectionContainer}>
+            <div className={styles.sectionHeader}>
+              <input
+                type="text"
+                value={image.url}
+                onChange={(e) => {
+                  const newImages = [...images];
+                  newImages[index].url = e.target.value;
+                  setImages(newImages);
+                }}
+                placeholder={`Image ${index + 1} URL`}
+                className={styles.sectionInput}
+              />
+              <button
+                type="button"
+                onClick={() => removeImage(index)}
+                className={styles.removeButton}
+              >
+                Remove
+              </button>
+            </div>
+            <input
+              type="text"
+              value={image.alt}
+              onChange={(e) => {
+                const newImages = [...images];
+                newImages[index].alt = e.target.value;
+                setImages(newImages);
+              }}
+              placeholder={`Image ${index + 1} Alt Text`}
+              className={styles.input}
+            />
+            {image.url && (
+              <div className={styles.imagePreview}>
+                <Image
+                  src={image.url}
+                  alt={image.alt || 'Preview'}
+                  width={200}
+                  height={200}
+                  objectFit="cover"
+                />
+              </div>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={addImage} className={styles.addButton}>
+          Add Image
         </button>
 
         <div className={styles.formGroup}>

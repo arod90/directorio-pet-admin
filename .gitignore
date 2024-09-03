@@ -39,3 +39,6 @@ next-env.d.ts
 # admin creds
 createAdmin.js
 .env
+
+#ai digest
+codebase.md

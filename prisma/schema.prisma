@@ -103,9 +103,20 @@ model Blog {
   contentSections ContentSection[]
   faqs            FAQ[]
   conclusion      String           @db.Text
+  images          BlogImage[]      // New field for blog images
 
   @@index([categoryName])
   @@index([publishedAt])
+}
+
+model BlogImage {
+  id     String @id @default(uuid())
+  url    String
+  alt    String
+  blogId String
+  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  @@index([blogId])
 }
 
 model TableOfContents {

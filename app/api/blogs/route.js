@@ -14,6 +14,7 @@ export async function POST(request) {
       sections,
       faqs,
       conclusion,
+      images,
     } = await request.json();
 
     const slug = title
@@ -50,6 +51,12 @@ export async function POST(request) {
             question: faq.question,
             answer: faq.answer,
             order: index,
+          })),
+        },
+        images: {
+          create: images.map((image) => ({
+            url: image.url,
+            alt: image.alt,
           })),
         },
       },
