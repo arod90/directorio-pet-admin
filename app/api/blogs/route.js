@@ -30,6 +30,7 @@ export async function POST(request) {
         metaDescription,
         introduction,
         conclusion,
+        publishedAt: new Date(),
         category: {
           connect: { name: categoryName },
         },
