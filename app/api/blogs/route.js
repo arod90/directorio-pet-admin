@@ -54,9 +54,10 @@ export async function POST(request) {
           })),
         },
         images: {
-          create: images.map((image) => ({
+          create: images.map((image, index) => ({
             url: image.url,
             alt: image.alt,
+            order: index,
           })),
         },
       },
