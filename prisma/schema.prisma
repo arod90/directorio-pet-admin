@@ -113,6 +113,7 @@ model BlogImage {
   id     String @id @default(uuid())
   url    String
   alt    String
+  order  Int
   blogId String
   blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
 
