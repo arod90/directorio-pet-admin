@@ -11,7 +11,8 @@ const categories = [
   { display: 'Peluquería', value: 'Peluqueria' },
   { display: 'Experiencias Pet-friendly', value: 'Petfriendly' },
   { display: 'Productos', value: 'Productos' },
-  { display: 'Servicios y Salud', value: 'Servicios' },
+  { display: 'Servicios', value: 'Servicios' },
+  { display: 'Bienestar', value: 'Bienestar' },
   { display: 'Veterinarios', value: 'Veterinarios' },
 ];
 
