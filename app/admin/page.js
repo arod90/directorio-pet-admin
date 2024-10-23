@@ -13,18 +13,9 @@ export default function AdminDashboard() {
     recentBlogs: [],
     recentPosts: [],
     systemStatus: {
-      database: {
-        status: 'checking',
-        latency: 'checking',
-      },
-      api: {
-        status: 'checking',
-        latency: 'checking',
-      },
-      contentDelivery: {
-        status: 'checking',
-        latency: 'checking',
-      },
+      database: { status: 'checking', latency: 'checking' },
+      api: { status: 'checking', latency: 'checking' },
+      contentDelivery: { status: 'checking', latency: 'checking' },
     },
   });
   const [loading, setLoading] = useState(true);
@@ -32,7 +23,6 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
-    // Refresh data every 30 seconds
     const interval = setInterval(fetchDashboardData, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -42,15 +32,7 @@ export default function AdminDashboard() {
       const response = await fetch('/api/dashboard');
       if (!response.ok) throw new Error('Failed to fetch dashboard data');
       const data = await response.json();
-      // Ensure systemStatus exists in the response
-      setStats({
-        ...data,
-        systemStatus: data.systemStatus || {
-          database: { status: 'unknown', latency: 'unknown' },
-          api: { status: 'unknown', latency: 'unknown' },
-          contentDelivery: { status: 'unknown', latency: 'unknown' },
-        },
-      });
+      setStats(data);
     } catch (error) {
       console.error('Dashboard fetch error:', error);
       setError(error.message);
@@ -68,7 +50,7 @@ export default function AdminDashboard() {
       case 'down':
         return 'bg-red-500';
       default:
-        return 'bg-gray-500';
+        return 'bg-gray-400';
     }
   };
 
@@ -185,12 +167,7 @@ export default function AdminDashboard() {
                       {service.replace(/([A-Z])/g, ' $1').trim()}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`text-sm ${getLatencyColor(status?.latency)}`}
-                    >
-                      {status?.latency || 'Unknown'}
-                    </span>
+                  <div className="flex items-center space-x-4">
                     <span className="text-sm text-gray-500">
                       {status?.status || 'Unknown'}
                     </span>
