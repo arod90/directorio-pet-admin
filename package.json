@@ -11,6 +11,8 @@
     "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.10",
+    "@heroicons/react": "^2.1.5",
     "@prisma/client": "^5.19.0",
     "ai-digest": "^1.0.5",
     "bcryptjs": "^2.4.3",
