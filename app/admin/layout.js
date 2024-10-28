@@ -10,6 +10,7 @@ const navigation = [
   { name: 'Create Blog', href: '/admin/blogs', current: false },
   { name: 'Manage Blogs', href: '/admin/blogs/manage', current: false },
   { name: 'Publications', href: '/admin/publications/manage', current: false },
+  { name: 'Users', href: '/admin/users/manage', current: false }, // Add this line
 ];
 
 function classNames(...classes) {
