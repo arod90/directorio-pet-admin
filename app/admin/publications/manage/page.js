@@ -3,11 +3,16 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Modal from '../../components/Modal';
+import PublicationForm from '../../components/PublicationForm';
 
 export default function ManagePublications() {
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPublication, setSelectedPublication] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -44,8 +49,62 @@ export default function ManagePublications() {
     }
   };
 
-  const handleEdit = (publication) => {
-    router.push(`/admin/publications/edit/${publication.id}`);
+  const handleEdit = async (publication) => {
+    try {
+      const response = await fetch(`/api/posts/${publication.id}`);
+      if (!response.ok) throw new Error('Failed to fetch publication details');
+      const fullPublicationData = await response.json();
+
+      setSelectedPublication(fullPublicationData);
+      setIsModalOpen(true);
+    } catch (err) {
+      alert('Error fetching publication details: ' + err.message);
+    }
+  };
+
+  const handleUpdate = async (formData) => {
+    setIsSubmitting(true);
+    try {
+      console.log('Updating with data:', {
+        id: selectedPublication.id,
+        ...formData,
+      });
+
+      const response = await fetch('/api/posts', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: selectedPublication.id,
+          userId: selectedPublication.userId, // Make sure to include the userId
+          ...formData,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update publication');
+      }
+
+      const updatedPublication = await response.json();
+      console.log('Update successful:', updatedPublication);
+
+      // Refresh publications list
+      await fetchPublications();
+
+      // Close modal and reset state
+      setIsModalOpen(false);
+      setSelectedPublication(null);
+
+      // Show success message
+      alert('Publication updated successfully!');
+    } catch (err) {
+      console.error('Update error:', err);
+      alert('Error updating publication: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) return <div className="p-4">Loading...</div>;
@@ -74,10 +133,19 @@ export default function ManagePublications() {
                 Category
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                City
+                City/Hood
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Contact
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Social Media
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Price
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -87,33 +155,85 @@ export default function ManagePublications() {
           <tbody className="bg-white divide-y divide-gray-200">
             {publications.map((publication) => (
               <tr key={publication.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4">
                   <div className="text-sm font-medium text-gray-900">
                     {publication.name}
                   </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-500">
-                    {publication.categoryName}
+                    {publication.title}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">
+                    {publication.categoryName}
+                  </div>
+                  {publication.subcategories?.map((sub) => (
+                    <span
+                      key={sub.id}
+                      className="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-1 mr-1"
+                    >
+                      {sub.name}
+                    </span>
+                  ))}
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900">
+                    {publication.city}
+                  </div>
                   <div className="text-sm text-gray-500">
-                    {publication.city || 'N/A'}
+                    {publication.hood}
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900">
+                    {publication.phone}
+                  </div>
+                  {publication.delivery && (
+                    <span className="text-xs text-green-800 bg-green-100 rounded-full px-2 py-1">
+                      Delivery
+                    </span>
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  <div className="space-y-1">
+                    {publication.instagram && (
+                      <div className="text-sm text-blue-600">
+                        @{publication.instagram}
+                      </div>
+                    )}
+                    {publication.facebook && (
+                      <div className="text-sm text-blue-800">
+                        {publication.facebook}
+                      </div>
+                    )}
+                    {publication.tikTok && (
+                      <div className="text-sm text-pink-600">
+                        {publication.tikTok}
+                      </div>
+                    )}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      publication.promotion
-                        ? publication.promotion === 'GOLD'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100 text-gray-800'
+                      publication.promotion === 'GOLD'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : publication.promotion === 'SILVER'
+                        ? 'bg-gray-100 text-gray-800'
                         : 'bg-green-100 text-green-800'
                     }`}
                   >
                     {publication.promotion || 'Regular'}
                   </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {publication.price ? (
+                    <div className="text-sm text-gray-900">
+                      ${publication.price.toFixed(2)}
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-500">N/A</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
@@ -134,6 +254,24 @@ export default function ManagePublications() {
           </tbody>
         </table>
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedPublication(null);
+        }}
+        title="Edit Publication"
+      >
+        {selectedPublication && (
+          <PublicationForm
+            initialData={selectedPublication}
+            onSubmit={handleUpdate}
+            isSubmitting={isSubmitting}
+            submitButtonText="Update Publication"
+          />
+        )}
+      </Modal>
     </div>
   );
 }
