@@ -1,4 +1,3 @@
-// app/admin/page.js
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -21,17 +20,27 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchDashboardData();
-    const interval = setInterval(fetchDashboardData, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch('/api/dashboard');
-      if (!response.ok) throw new Error('Failed to fetch dashboard data');
+      // Add cache busting query parameter
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/dashboard?t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch dashboard data: ${response.statusText}`
+        );
+      }
+
       const data = await response.json();
+      console.log('Dashboard data fetched:', data); // Debug log
       setStats(data);
     } catch (error) {
       console.error('Dashboard fetch error:', error);
@@ -40,6 +49,16 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDashboardData();
+    // Set up periodic refresh
+    const interval = setInterval(fetchDashboardData, 30000); // Refresh every 30 seconds
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -72,7 +91,15 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+        <button
+          onClick={fetchDashboardData}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        >
+          Refresh Data
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Stats Card */}

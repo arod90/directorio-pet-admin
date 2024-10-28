@@ -36,9 +36,13 @@ async function checkContentDelivery() {
 
 export async function GET() {
   try {
+    console.log('Fetching dashboard data...');
+
+    const publicationsCount = await prisma.post.count();
+    console.log('Total publications found:', publicationsCount);
+
     const [
       totalBlogs,
-      totalPublications,
       totalUsers,
       recentBlogs,
       recentPosts,
@@ -47,7 +51,6 @@ export async function GET() {
       contentStatus,
     ] = await Promise.all([
       prisma.blog.count(),
-      prisma.post.count(),
       prisma.user.count(),
       prisma.blog.findMany({
         take: 5,
@@ -78,9 +81,11 @@ export async function GET() {
       checkContentDelivery(),
     ]);
 
-    return NextResponse.json({
+    console.log('Recent posts found:', recentPosts.length);
+
+    const response = NextResponse.json({
       totalBlogs,
-      totalPublications,
+      totalPublications: publicationsCount,
       totalUsers,
       recentBlogs,
       recentPosts,
@@ -90,21 +95,49 @@ export async function GET() {
         contentDelivery: contentStatus,
       },
     });
+
+    // Add headers to prevent caching
+    response.headers.set(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate'
+    );
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+
+    return response;
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
-    return NextResponse.json({
-      totalBlogs: 0,
-      totalPublications: 0,
-      totalUsers: 0,
-      recentBlogs: [],
-      recentPosts: [],
-      systemStatus: {
-        database: { status: 'down', latency: 'bad' },
-        api: { status: 'down', latency: 'bad' },
-        contentDelivery: { status: 'down', latency: 'bad' },
+    const errorResponse = NextResponse.json(
+      {
+        error: 'Error fetching dashboard data',
+        details: error.message,
+        totalBlogs: 0,
+        totalPublications: 0,
+        totalUsers: 0,
+        recentBlogs: [],
+        recentPosts: [],
+        systemStatus: {
+          database: { status: 'down', latency: 'bad' },
+          api: { status: 'down', latency: 'bad' },
+          contentDelivery: { status: 'down', latency: 'bad' },
+        },
       },
-    });
+      { status: 500 }
+    );
+
+    // Add same cache prevention headers to error response
+    errorResponse.headers.set(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate'
+    );
+    errorResponse.headers.set('Pragma', 'no-cache');
+    errorResponse.headers.set('Expires', '0');
+
+    return errorResponse;
   } finally {
     await prisma.$disconnect();
   }
 }
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
